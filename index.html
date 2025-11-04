@@ -1,9 +1,3 @@
-/*
-Multi-contact Landing Page (React + Tailwind)
-- Ajout d’un logo dans l’en-tête (voir <img> dans le header)
-- Remplacez l’URL du logo dans `DATA.logo` ci-dessous.
-*/
-
 import React from 'react';
 import {
   Phone,
@@ -12,12 +6,14 @@ import {
   Instagram,
   Facebook,
   MessageCircle,
-  Copy
+  Copy,
+  Globe,
+  ExternalLink
 } from 'lucide-react';
 
 const DATA = {
-  businessName: "Votre Entreprise",
-  logo: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg", // Remplacez par votre logo (URL ou import local)
+  businessName: "SIB - Contact",
+  logo: "/logo.png", // mettez votre logo dans public/logo.png ou remplacez par une URL complète
   whatsappNumber: "+21612345678",
   instagram: "https://instagram.com/votrecompte",
   facebook: "https://facebook.com/votrepage",
@@ -37,131 +33,162 @@ export default function MultiContactLanding() {
   const copyToClipboard = async (text) => {
     try {
       await navigator.clipboard.writeText(text);
-      alert('Copié dans le presse-papiers: ' + text);
+      toast('Copié !');
     } catch (e) {
       alert('Impossible de copier — utilisez la sélection manuelle.');
     }
   };
 
-  return (
-    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 flex items-center justify-center p-6">
-      <section className="w-full max-w-3xl bg-white shadow-xl rounded-2xl p-8">
-        <header className="flex items-center gap-4">
-          {DATA.logo ? (
-            <img
-              src={DATA.logo}
-              alt="Logo"
-              className="w-16 h-16 rounded-xl object-cover border border-gray-200 shadow-sm"
-            />
-          ) : (
-            <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center text-2xl font-bold">
-              {DATA.businessName.charAt(0).toUpperCase()}
-            </div>
-          )}
+  const toast = (msg) => {
+    const el = document.createElement('div');
+    el.textContent = msg;
+    el.className = 'fixed right-6 bottom-6 bg-white/90 backdrop-blur rounded-full px-4 py-2 shadow-lg text-sm border border-gray-200';
+    document.body.appendChild(el);
+    setTimeout(() => el.remove(), 1800);
+  };
 
-          <div>
-            <h1 className="text-2xl font-semibold">{DATA.businessName}</h1>
-            <p className="text-sm text-gray-500">Retrouvez-nous sur toutes les plateformes — contact direct</p>
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-white via-blue-50 to-white flex items-center justify-center p-6">
+      <section className="w-full max-w-4xl bg-white shadow-2xl rounded-3xl overflow-hidden border border-gray-100">
+
+        {/* Header */}
+        <header className="relative bg-gradient-to-r from-[#0C63A3]/10 via-transparent to-[#D1212F]/8 p-6 flex flex-col items-center gap-4 md:gap-6">
+          <div className="-mt-6 w-36 h-36 rounded-full bg-white shadow-xl flex items-center justify-center border-4 border-white">
+            <img src={DATA.logo} alt="Logo" className="w-32 h-32 object-contain" />
+          </div>
+
+          <div className="text-center">
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-[#0C63A3]">{DATA.businessName}</h1>
+            <p className="mt-1 text-sm text-gray-500">Retrouvez-nous et contactez-nous directement via WhatsApp, Instagram, Facebook ou par email.</p>
+          </div>
+
+          <div className="absolute inset-x-0 bottom-0 translate-y-1/2 flex justify-center">
+            <div className="w-48 h-2 rounded-full bg-gradient-to-r from-[#0C63A3] to-[#D1212F] shadow-lg" />
           </div>
         </header>
 
-        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div className="space-y-3">
-            <h2 className="text-lg font-medium">Réseaux sociaux</h2>
+        {/* Content */}
+        <div className="p-6 md:p-8 grid grid-cols-1 md:grid-cols-3 gap-6">
 
-            <a href={DATA.instagram} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition">
-              <div className="p-2 bg-gradient-to-br from-pink-100 to-yellow-100 rounded-md">
-                <Instagram size={22} />
+          {/* Column 1 - Socials */}
+          <div className="col-span-1 md:col-span-2 space-y-4">
+            <div className="flex items-center justify-between">
+              <h2 className="text-lg font-semibold text-gray-700">Réseaux & Messagerie</h2>
+              <div className="text-xs text-gray-400 flex items-center gap-2">
+                <Globe size={14} />
+                Statique — modifiez les liens dans le code
               </div>
-              <div className="flex-1">
-                <div className="font-medium">Instagram</div>
-                <div className="text-sm text-gray-500">{new URL(DATA.instagram).pathname.replace('/', '')}</div>
-              </div>
-              <div className="text-sm text-gray-400">Ouvrir</div>
-            </a>
+            </div>
 
-            <a href={DATA.facebook} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition">
-              <div className="p-2 bg-blue-50 rounded-md">
-                <Facebook size={22} />
-              </div>
-              <div className="flex-1">
-                <div className="font-medium">Facebook</div>
-                <div className="text-sm text-gray-500">Page officielle</div>
-              </div>
-              <div className="text-sm text-gray-400">Ouvrir</div>
-            </a>
-          </div>
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+              <a href={encodeWa(DATA.whatsappNumber, DATA.whatsappPrefilledMessage)} target="_blank" rel="noopener noreferrer" className="group block p-4 rounded-2xl bg-gradient-to-r from-[#0C63A3]/8 to-[#D1212F]/6 border border-gray-100 hover:scale-[1.01] transition-transform shadow-sm">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-white rounded-lg flex items-center justify-center shadow-inner">
+                    <MessageCircle size={22} className="text-[#0C63A3]" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div className="font-semibold text-gray-800">WhatsApp Business</div>
+                      <div className="text-sm text-gray-500">{DATA.phone}</div>
+                    </div>
+                    <p className="mt-2 text-sm text-gray-500">Démarrez une conversation instantanée avec un message pré-rempli.</p>
+                  </div>
+                </div>
+              </a>
 
-          <div className="space-y-3">
-            <h2 className="text-lg font-medium">WhatsApp Business</h2>
-            <p className="text-sm text-gray-500">Contact direct via WhatsApp — conversation instantanée</p>
+              <a href={DATA.instagram} target="_blank" rel="noopener noreferrer" className="group block p-4 rounded-2xl bg-white border border-gray-100 hover:shadow-lg transition-shadow">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-gradient-to-br from-pink-300 to-yellow-200 rounded-lg flex items-center justify-center">
+                    <Instagram size={22} className="text-white" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div className="font-semibold text-gray-800">Instagram</div>
+                      <div className="text-sm text-gray-500">@{new URL(DATA.instagram).pathname.replace('/', '')}</div>
+                    </div>
+                    <p className="mt-2 text-sm text-gray-500">Suivez nos publications et stories.</p>
+                  </div>
+                </div>
+              </a>
 
-            <a href={encodeWa(DATA.whatsappNumber, DATA.whatsappPrefilledMessage)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-lg bg-green-50 hover:bg-green-100 transition">
-              <div className="p-2 bg-white rounded-md shadow-sm">
-                <MessageCircle size={20} />
-              </div>
-              <div className="flex-1 text-sm font-medium">Ouvrir WhatsApp Business</div>
-              <div className="text-sm text-gray-600">{DATA.phone}</div>
-            </a>
+              <a href={DATA.facebook} target="_blank" rel="noopener noreferrer" className="group block p-4 rounded-2xl bg-white border border-gray-100 hover:shadow-lg transition-shadow">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-blue-50 rounded-lg flex items-center justify-center">
+                    <Facebook size={22} className="text-[#0C63A3]" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div className="font-semibold text-gray-800">Facebook</div>
+                      <div className="text-sm text-gray-500">Page officielle</div>
+                    </div>
+                    <p className="mt-2 text-sm text-gray-500">Rejoignez notre communauté.</p>
+                  </div>
+                </div>
+              </a>
 
-            <div className="flex gap-2">
-              <button onClick={() => window.open(encodeWa(DATA.whatsappNumber, DATA.whatsappPrefilledMessage), '_blank')} className="flex-1 p-3 rounded-lg border hover:bg-gray-50 transition">
-                Démarrer une conversation
-              </button>
-
-              <button onClick={() => copyToClipboard(DATA.whatsappNumber)} className="p-3 rounded-lg border flex items-center gap-2" title="Copier le numéro">
-                <Copy size={16} /> Copier
-              </button>
+              <a href={`mailto:${DATA.email}`} className="group block p-4 rounded-2xl bg-white border border-gray-100 hover:shadow-lg transition-shadow">
+                <div className="flex items-start gap-4">
+                  <div className="flex-shrink-0 w-12 h-12 bg-red-50 rounded-lg flex items-center justify-center">
+                    <Mail size={22} className="text-[#D1212F]" />
+                  </div>
+                  <div className="flex-1">
+                    <div className="flex items-center justify-between">
+                      <div className="font-semibold text-gray-800">Email</div>
+                      <div className="text-sm text-gray-500">{DATA.email}</div>
+                    </div>
+                    <p className="mt-2 text-sm text-gray-500">Envoyez-nous un message détaillé.</p>
+                  </div>
+                </div>
+              </a>
             </div>
           </div>
+
+          {/* Column 2 - Contact card */}
+          <aside className="col-span-1 rounded-2xl p-4 bg-gradient-to-b from-white to-[#0C63A3]/6 border border-gray-100 shadow-sm sticky top-6">
+            <div className="flex flex-col gap-3">
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-white shadow-sm border">
+                  <Phone size={18} className="text-[#0C63A3]" />
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-gray-800">Téléphone</div>
+                  <a href={`tel:${DATA.phone.replace(/\s+/g, '')}`} className="text-sm text-gray-500 underline">{DATA.phone}</a>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-white shadow-sm border">
+                  <MapPin size={18} className="text-[#D1212F]" />
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-gray-800">Adresse</div>
+                  <div className="text-sm text-gray-500">{DATA.address}</div>
+                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(DATA.address)}`} target="_blank" rel="noopener noreferrer" className="text-xs text-[#0C63A3] underline mt-1 inline-flex items-center gap-1">Ouvrir <ExternalLink size={12} /></a>
+                </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <div className="w-12 h-12 rounded-lg flex items-center justify-center bg-white shadow-sm border">
+                  <Mail size={18} className="text-[#D1212F]" />
+                </div>
+                <div>
+                  <div className="text-sm font-semibold text-gray-800">Email</div>
+                  <div className="text-sm text-gray-500 inline-flex items-center gap-2">{DATA.email} <button onClick={() => copyToClipboard(DATA.email)} className="text-xs text-gray-400 ml-2">Copier</button></div>
+                </div>
+              </div>
+
+              <div className="mt-2 flex gap-2">
+                <button onClick={() => window.open(encodeWa(DATA.whatsappNumber, DATA.whatsappPrefilledMessage), '_blank')} className="flex-1 py-2 rounded-xl bg-gradient-to-r from-[#0C63A3] to-[#D1212F] text-white font-semibold shadow-md hover:brightness-105 transition">WhatsApp</button>
+                <button onClick={() => copyToClipboard(DATA.phone)} className="py-2 px-3 rounded-xl border bg-white">Copier</button>
+              </div>
+
+              <div className="mt-3 text-xs text-gray-400">Site statique — mettez à jour les informations dans le fichier <code className="bg-gray-100 px-1 rounded">src/App.jsx</code>.</div>
+            </div>
+          </aside>
+
         </div>
 
-        <div className="mt-8 border-t pt-6 space-y-4">
-          <h2 className="text-lg font-medium">Contact & Localisation</h2>
-
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
-              <Phone size={20} />
-              <div>
-                <div className="font-medium">Téléphone</div>
-                <div className="text-sm text-gray-600 flex items-center gap-2">
-                  <a href={`tel:${DATA.phone.replace(/\s+/g, '')}`}>{DATA.phone}</a>
-                  <button onClick={() => copyToClipboard(DATA.phone)} className="text-xs text-gray-400 ml-2">Copier</button>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
-              <Mail size={20} />
-              <div>
-                <div className="font-medium">Email</div>
-                <div className="text-sm text-gray-600 flex items-center gap-2">
-                  <a href={`mailto:${DATA.email}`}>{DATA.email}</a>
-                  <button onClick={() => copyToClipboard(DATA.email)} className="text-xs text-gray-400 ml-2">Copier</button>
-                </div>
-              </div>
-            </div>
-
-            <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
-              <MapPin size={20} />
-              <div>
-                <div className="font-medium">Adresse</div>
-                <div className="text-sm text-gray-600">{DATA.address}</div>
-                <div className="mt-2">
-                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(DATA.address)}`} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 underline">
-                    Ouvrir dans Google Maps
-                  </a>
-                </div>
-              </div>
-            </div>
-          </div>
-
-          <div className="mt-4 text-sm text-gray-500">
-            <strong>Astuce :</strong> personnalisez le message pré-rempli WhatsApp dans le fichier pour aider les clients à se présenter rapidement.
-          </div>
-        </div>
-
-        <footer className="mt-6 text-center text-xs text-gray-400">
+        <footer className="p-4 border-t border-gray-100 text-center text-sm text-gray-400">
           © {new Date().getFullYear()} {DATA.businessName} — Tous droits réservés
         </footer>
       </section>
