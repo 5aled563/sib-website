@@ -1,366 +1,170 @@
-<!DOCTYPE html>
-<html lang="fr">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>SIB — Catalogue Informatique & Bureautique</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <style>
-    body { font-family: Arial, sans-serif; background-color: #f8f9fa; }
-    .product-card img { height: 180px; object-fit: contain; }
-    .btn-danger { background-color: #ff002b; border-color: #ff002b; }
-    .btn-danger:hover { background-color: #cc0023; }
-    .logo { max-height: 50px; }
-    footer a { color: white; text-decoration: none; }
-  </style>
-</head>
-<body>
+/*
+Multi-contact Landing Page (React + Tailwind)
+- Ajout d’un logo dans l’en-tête (voir <img> dans le header)
+- Remplacez l’URL du logo dans `DATA.logo` ci-dessous.
+*/
 
-<header class="bg-danger text-white py-3">
-  <div class="container d-flex justify-content-between align-items-center">
-    <img src="logo.png" class="logo" alt="Logo SIB" id="site-logo">
-    <h3>SIB — Informatique & Bureautique</h3>
-  </div>
-</header>
+import React from 'react';
+import {
+  Phone,
+  Mail,
+  MapPin,
+  Instagram,
+  Facebook,
+  MessageCircle,
+  Copy
+} from 'lucide-react';
 
-<nav class="navbar navbar-expand-lg navbar-light bg-white border-bottom">
-  <div class="container">
-    <a class="navbar-brand" href="#" onclick="showSection('catalog')">Catalogue</a>
-    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-        <span class="navbar-toggler-icon"></span>
-    </button>
-    <div class="collapse navbar-collapse" id="navbarNav">
-      <ul class="navbar-nav ms-auto">
-        <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('catalog')">Produits</a></li>
-        <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('panier')">Panier</a></li>
-        <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('account')">Compte</a></li>
-        <li class="nav-item"><a class="nav-link" href="#" onclick="showSection('admin')">Admin</a></li>
-      </ul>
-    </div>
-  </div>
-</nav>
+const DATA = {
+  businessName: "Votre Entreprise",
+  logo: "https://upload.wikimedia.org/wikipedia/commons/a/ac/Default_pfp.jpg", // Remplacez par votre logo (URL ou import local)
+  whatsappNumber: "+21612345678",
+  instagram: "https://instagram.com/votrecompte",
+  facebook: "https://facebook.com/votrepage",
+  email: "contact@votredomaine.tn",
+  address: "123 Rue Exemple, Tunis, Tunisie",
+  phone: "+216 12 345 678",
+  whatsappPrefilledMessage: "Bonjour, je voudrais avoir plus d'informations."
+};
 
-<main class="container my-4">
-
-  <!-- Catalogue / catégorie -->
-  <section id="catalog" class="section" style="display:block;">
-    <div class="row mb-3">
-      <div class="col-md-4">
-        <input type="text" id="filter-keyword" class="form-control" placeholder="Rechercher…"/>
-      </div>
-      <div class="col-md-4">
-        <select id="filter-category" class="form-select">
-          <option value="">Toutes catégories</option>
-          <!-- catégories ajoutées dynamiquement -->
-        </select>
-      </div>
-      <div class="col-md-4 text-end">
-        <button class="btn btn-danger" onclick="applyFilters()">Filtrer</button>
-      </div>
-    </div>
-    <div class="row" id="product-grid"></div>
-  </section>
-
-  <!-- Panier -->
-  <section id="panier" class="section" style="display:none;">
-    <h2>Votre Panier</h2>
-    <div id="cart-items"></div>
-    <button id="btn-checkout" class="btn btn-danger mt-3">Valider la commande</button>
-  </section>
-
-  <!-- Compte client -->
-  <section id="account" class="section" style="display:none;">
-    <h2>Mon Compte</h2>
-    <div id="account-forms">
-      <form id="login-form">
-        <div class="mb-3"><label>Email</label><input type="email" class="form-control" id="login-email" required></div>
-        <div class="mb-3"><label>Mot de passe</label><input type="password" class="form-control" id="login-password" required></div>
-        <button class="btn btn-danger" type="submit">Se connecter</button>
-      </form>
-      <hr/>
-      <form id="register-form">
-        <div class="mb-3"><label>Email</label><input type="email" class="form-control" id="register-email" required></div>
-        <div class="mb-3"><label>Mot de passe</label><input type="password" class="form-control" id="register-password" required></div>
-        <button class="btn btn-danger" type="submit">Créer un compte</button>
-      </form>
-    </div>
-  </section>
-
-  <!-- Admin -->
-  <section id="admin" class="section" style="display:none;">
-    <h2>Administration</h2>
-    <form id="admin-login-form">
-      <div class="mb-3"><label>Email</label><input type="email" class="form-control" id="admin-email" required></div>
-      <div class="mb-3"><label>Mot de passe</label><input type="password" class="form-control" id="admin-password" required></div>
-      <button class="btn btn-danger" type="submit">Se connecter</button>
-    </form>
-    <div id="admin-panel" style="display:none;">
-      <h3>Produits</h3>
-      <form id="admin-add-form" class="mb-3">
-        <div class="mb-2"><input type="text" id="admin-prod-name" class="form-control" placeholder="Nom produit"></div>
-        <div class="mb-2"><input type="number" id="admin-prod-price" class="form-control" placeholder="Prix"></div>
-        <div class="mb-2"><input type="text" id="admin-prod-cat" class="form-control" placeholder="Catégorie"></div>
-        <div class="mb-2"><input type="text" id="admin-prod-photo" class="form-control" placeholder="URL photo"></div>
-        <button class="btn btn-danger" type="submit">Ajouter produit</button>
-      </form>
-      <div id="admin-product-list"></div>
-
-      <h3 class="mt-4">Annonces</h3>
-      <form id="admin-post-form" class="mb-3">
-        <div class="mb-2"><input type="text" id="admin-post-title" class="form-control" placeholder="Titre"></div>
-        <div class="mb-2"><textarea id="admin-post-content" class="form-control" placeholder="Contenu"></textarea></div>
-        <button class="btn btn-danger" type="submit">Ajouter annonce</button>
-      </form>
-      <div id="admin-post-list"></div>
-    </div>
-  </section>
-
-</main>
-
-<footer class="bg-dark text-white text-center p-3">
-  <p>&copy; 2025 SIB — Tous droits réservés</p>
-  <p>📞 +216 90 202 000 | ✉️ <a href="mailto:sibjerba@yahoo.fr">sibjerba@yahoo.fr</a></p>
-</footer>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-// Configuration JSONBin
-const BIN_ID = '69038ad6d0ea881f40c77262';
-const API_KEY = '$2a$10$SM/b.U8uHOuR8HQq49OfQeVGonwnFopJUN5O5UUoaQJheFE0dedxW';
-const BASE_URL = `https://api.jsonbin.io/v3/b/${BIN_ID}`;
-
-// Fonction pour charger données
-async function chargerDonnees() {
-  const resp = await fetch(BASE_URL, {
-    headers: { 'X-Master-Key': API_KEY }
-  });
-  const j = await resp.json();
-  return j.record;
+function encodeWa(number, text) {
+  const clean = number.replace(/[^+0-9]/g, '');
+  const encoded = encodeURIComponent(text);
+  return `https://wa.me/${clean.replace('+', '')}?text=${encoded}`;
 }
 
-// Fonction pour sauvegarder
-async function sauvegarderDonnees(data) {
-  await fetch(BASE_URL, {
-    method: 'PUT',
-    headers: {
-      'Content-Type': 'application/json',
-      'X-Master-Key': API_KEY
-    },
-    body: JSON.stringify(data)
-  });
-}
+export default function MultiContactLanding() {
+  const copyToClipboard = async (text) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      alert('Copié dans le presse-papiers: ' + text);
+    } catch (e) {
+      alert('Impossible de copier — utilisez la sélection manuelle.');
+    }
+  };
 
-// Données en mémoire
-let produits = [];
-let clients = [];
-let commandes = [];
-let posts = [];
-let panier = [];
-let currentClient = null;
+  return (
+    <main className="min-h-screen bg-gradient-to-b from-white to-gray-50 flex items-center justify-center p-6">
+      <section className="w-full max-w-3xl bg-white shadow-xl rounded-2xl p-8">
+        <header className="flex items-center gap-4">
+          {DATA.logo ? (
+            <img
+              src={DATA.logo}
+              alt="Logo"
+              className="w-16 h-16 rounded-xl object-cover border border-gray-200 shadow-sm"
+            />
+          ) : (
+            <div className="w-16 h-16 rounded-xl bg-gray-100 flex items-center justify-center text-2xl font-bold">
+              {DATA.businessName.charAt(0).toUpperCase()}
+            </div>
+          )}
 
-// Initialisation
-(async () => {
-  const d = await chargerDonnees();
-  produits = d.produits || [];
-  clients = d.clients || [];
-  commandes = d.commandes || [];
-  posts = d.posts || [];
-  panier = d.panier || [];
-  renderProducts();
-  renderPosts();
-})();
+          <div>
+            <h1 className="text-2xl font-semibold">{DATA.businessName}</h1>
+            <p className="text-sm text-gray-500">Retrouvez-nous sur toutes les plateformes — contact direct</p>
+          </div>
+        </header>
 
-// Montrer / cacher section
-function showSection(id) {
-  document.querySelectorAll('.section').forEach(s => s.style.display = 'none');
-  const sec = document.getElementById(id);
-  if (sec) sec.style.display = 'block';
-}
+        <div className="mt-8 grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="space-y-3">
+            <h2 className="text-lg font-medium">Réseaux sociaux</h2>
 
-// Rendu des produits
-function renderProducts(filter = {}) {
-  const grid = document.getElementById('produits-list');
-  grid.innerHTML = '';
-  let arr = produits;
-  if (filter.keyword) {
-    arr = arr.filter(p => p.name.toLowerCase().includes(filter.keyword.toLowerCase()));
-  }
-  if (filter.category) {
-    arr = arr.filter(p => p.category === filter.category);
-  }
-  arr.forEach(p => {
-    const html = `
-      <div class="col-md-4 mb-3">
-        <div class="card product-card">
-          <img src="${p.photo || 'placeholder.jpg'}" class="card-img-top">
-          <div class="card-body">
-            <h5>${p.name}</h5>
-            <p>${p.price} DT</p>
-            <button class="btn btn-danger" onclick="addToCart(${p.id})">Ajouter au panier</button>
+            <a href={DATA.instagram} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition">
+              <div className="p-2 bg-gradient-to-br from-pink-100 to-yellow-100 rounded-md">
+                <Instagram size={22} />
+              </div>
+              <div className="flex-1">
+                <div className="font-medium">Instagram</div>
+                <div className="text-sm text-gray-500">{new URL(DATA.instagram).pathname.replace('/', '')}</div>
+              </div>
+              <div className="text-sm text-gray-400">Ouvrir</div>
+            </a>
+
+            <a href={DATA.facebook} target="_blank" rel="noopener noreferrer" className="group flex items-center gap-3 p-3 rounded-lg hover:bg-gray-50 transition">
+              <div className="p-2 bg-blue-50 rounded-md">
+                <Facebook size={22} />
+              </div>
+              <div className="flex-1">
+                <div className="font-medium">Facebook</div>
+                <div className="text-sm text-gray-500">Page officielle</div>
+              </div>
+              <div className="text-sm text-gray-400">Ouvrir</div>
+            </a>
+          </div>
+
+          <div className="space-y-3">
+            <h2 className="text-lg font-medium">WhatsApp Business</h2>
+            <p className="text-sm text-gray-500">Contact direct via WhatsApp — conversation instantanée</p>
+
+            <a href={encodeWa(DATA.whatsappNumber, DATA.whatsappPrefilledMessage)} target="_blank" rel="noopener noreferrer" className="flex items-center gap-3 p-3 rounded-lg bg-green-50 hover:bg-green-100 transition">
+              <div className="p-2 bg-white rounded-md shadow-sm">
+                <MessageCircle size={20} />
+              </div>
+              <div className="flex-1 text-sm font-medium">Ouvrir WhatsApp Business</div>
+              <div className="text-sm text-gray-600">{DATA.phone}</div>
+            </a>
+
+            <div className="flex gap-2">
+              <button onClick={() => window.open(encodeWa(DATA.whatsappNumber, DATA.whatsappPrefilledMessage), '_blank')} className="flex-1 p-3 rounded-lg border hover:bg-gray-50 transition">
+                Démarrer une conversation
+              </button>
+
+              <button onClick={() => copyToClipboard(DATA.whatsappNumber)} className="p-3 rounded-lg border flex items-center gap-2" title="Copier le numéro">
+                <Copy size={16} /> Copier
+              </button>
+            </div>
           </div>
         </div>
-      </div>`;
-    grid.insertAdjacentHTML('beforeend', html);
-  });
-}
 
-// Filtrer
-function applyFilters() {
-  const kw = document.getElementById('filter-keyword').value;
-  const cat = document.getElementById('filter-category').value;
-  renderProducts({ keyword: kw, category: cat });
-}
+        <div className="mt-8 border-t pt-6 space-y-4">
+          <h2 className="text-lg font-medium">Contact & Localisation</h2>
 
-// Panier
-function addToCart(id) {
-  if (!currentClient) { alert("Veuillez vous connecter."); return; }
-  const prod = produits.find(p => p.id === id);
-  if (prod) {
-    panier.push({ ...prod, clientEmail: currentClient.email });
-    sauvegarderDonnees({ produits, clients, commandes, posts, panier });
-    renderCart();
-  }
-}
-function renderCart() {
-  const div = document.getElementById('cart-items');
-  div.innerHTML = '';
-  const clientCart = panier.filter(it => it.clientEmail === (currentClient?.email || ''));
-  clientCart.forEach(it => {
-    div.insertAdjacentHTML('beforeend', `<p>${it.name} — ${it.price} DT</p>`);
-  });
-}
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
+              <Phone size={20} />
+              <div>
+                <div className="font-medium">Téléphone</div>
+                <div className="text-sm text-gray-600 flex items-center gap-2">
+                  <a href={`tel:${DATA.phone.replace(/\s+/g, '')}`}>{DATA.phone}</a>
+                  <button onClick={() => copyToClipboard(DATA.phone)} className="text-xs text-gray-400 ml-2">Copier</button>
+                </div>
+              </div>
+            </div>
 
-// Commander
-document.getElementById('btn-checkout').addEventListener('click', async () => {
-  if (!currentClient) { alert("Connectez-vous pour commander."); return; }
-  const clientCart = panier.filter(it => it.clientEmail === currentClient.email);
-  if (clientCart.length === 0) { alert("Panier vide."); return; }
-  commandes.push({ id: Date.now(), items: clientCart, client: currentClient.email, status: "En cours" });
-  panier = panier.filter(it => it.clientEmail !== currentClient.email);
-  await sauvegarderDonnees({ produits, clients, commandes, posts, panier });
-  renderCart();
-  alert("Commande passée !");
-});
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
+              <Mail size={20} />
+              <div>
+                <div className="font-medium">Email</div>
+                <div className="text-sm text-gray-600 flex items-center gap-2">
+                  <a href={`mailto:${DATA.email}`}>{DATA.email}</a>
+                  <button onClick={() => copyToClipboard(DATA.email)} className="text-xs text-gray-400 ml-2">Copier</button>
+                </div>
+              </div>
+            </div>
 
-// Posts / Annonces
-function renderPosts() {
-  const div = document.getElementById('posts-list');
-  div.innerHTML = '';
-  posts.forEach(p => {
-    div.insertAdjacentHTML('beforeend', `<div class="card mb-2"><div class="card-body"><h5>${p.title}</h5><p>${p.content}</p></div></div>`);
-  });
+            <div className="flex items-start gap-3 p-3 rounded-lg bg-gray-50">
+              <MapPin size={20} />
+              <div>
+                <div className="font-medium">Adresse</div>
+                <div className="text-sm text-gray-600">{DATA.address}</div>
+                <div className="mt-2">
+                  <a href={`https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(DATA.address)}`} target="_blank" rel="noopener noreferrer" className="text-sm text-blue-600 underline">
+                    Ouvrir dans Google Maps
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div className="mt-4 text-sm text-gray-500">
+            <strong>Astuce :</strong> personnalisez le message pré-rempli WhatsApp dans le fichier pour aider les clients à se présenter rapidement.
+          </div>
+        </div>
+
+        <footer className="mt-6 text-center text-xs text-gray-400">
+          © {new Date().getFullYear()} {DATA.businessName} — Tous droits réservés
+        </footer>
+      </section>
+    </main>
+  );
 }
-
-// Connexion / Inscription client
-document.getElementById('register-form').addEventListener('submit', async e => {
-  e.preventDefault();
-  const email = document.getElementById('register-email').value;
-  const password = document.getElementById('register-password').value;
-  if (clients.some(c => c.email === email)) {
-    alert("Email déjà utilisé.");
-    return;
-  }
-  const newClient = { email, password };
-  clients.push(newClient);
-  currentClient = newClient;
-  await sauvegarderDonnees({ produits, clients, commandes, posts, panier });
-  alert("Compte créé & connecté");
-});
-
-document.getElementById('login-form').addEventListener('submit', e => {
-  e.preventDefault();
-  const email = document.getElementById('login-email').value;
-  const password = document.getElementById('login-password').value;
-  const cl = clients.find(c => c.email === email && c.password === password);
-  if (cl) {
-    currentClient = cl;
-    alert("Connecté !");
-    renderCart();
-  } else {
-    alert("Email / mot de passe incorrect");
-  }
-});
-
-// Admin
-document.getElementById('admin-login-form').addEventListener('submit', e => {
-  e.preventDefault();
-  const email = document.getElementById('admin-email').value;
-  const pass = document.getElementById('admin-password').value;
-  if (email === 'admin@sib.tn' && pass === 'sadok2025') {
-    document.getElementById('admin-panel').style.display = 'block';
-    e.target.style.display = 'none';
-  } else alert("Accès refusé");
-});
-
-// Ajouter produit
-document.getElementById('admin-add-form').addEventListener('submit', async e => {
-  e.preventDefault();
-  const name = document.getElementById('admin-prod-name').value;
-  const price = Number(document.getElementById('admin-prod-price').value);
-  const category = document.getElementById('admin-prod-cat').value;
-  const photo = document.getElementById('admin-prod-photo').value;
-  produits.push({ id: Date.now(), name, price, category, photo });
-  await sauvegarderDonnees({ produits, clients, commandes, posts, panier });
-  renderProducts();
-  displayAdminProducts();
-});
-
-function displayAdminProducts() {
-  const div = document.getElementById('admin-product-list');
-  div.innerHTML = '';
-  produits.forEach(p => {
-    div.insertAdjacentHTML('beforeend', `<p>${p.name} — ${p.price} DT [${p.category}]
-      <button class="btn btn-sm btn-danger" onclick="adminEdit(${p.id})">Modifier</button>
-      <button class="btn btn-sm btn-danger" onclick="adminDelete(${p.id})">Supprimer</button>
-    </p>`);
-  });
-}
-function adminDelete(id) {
-  produits = produits.filter(p => p.id !== id);
-  sauvegarderDonnees({ produits, clients, commandes, posts, panier });
-  renderProducts();
-  displayAdminProducts();
-}
-function adminEdit(id) {
-  const p = produits.find(p => p.id === id);
-  const newName = prompt("Nom:", p.name);
-  const newPrice = prompt("Prix:", p.price);
-  const newCat = prompt("Catégorie:", p.category);
-  if (newName && newPrice && newCat) {
-    p.name = newName;
-    p.price = Number(newPrice);
-    p.category = newCat;
-    sauvegarderDonnees({ produits, clients, commandes, posts, panier });
-    renderProducts();
-    displayAdminProducts();
-  }
-}
-
-// Ajouter annonce
-document.getElementById('admin-post-form').addEventListener('submit', async e => {
-  e.preventDefault();
-  const title = document.getElementById('admin-post-title').value;
-  const content = document.getElementById('admin-post-content').value;
-  posts.push({ id: Date.now(), title, content });
-  await sauvegarderDonnees({ produits, clients, commandes, posts, panier });
-  renderPosts();
-  displayAdminPosts();
-});
-function displayAdminPosts() {
-  const div = document.getElementById('admin-post-list');
-  div.innerHTML = '';
-  posts.forEach(p => {
-    div.insertAdjacentHTML('beforeend', `<p>${p.title}
-      <button class="btn btn-sm btn-danger" onclick="adminDeletePost(${p.id})">Supprimer</button>
-    </p>`);
-  });
-}
-function adminDeletePost(id) {
-  posts = posts.filter(p => p.id !== id);
-  sauvegarderDonnees({ produits, clients, commandes, posts, panier });
-  renderPosts();
-  displayAdminPosts();
-}
-</script>
-</body>
-</html>
